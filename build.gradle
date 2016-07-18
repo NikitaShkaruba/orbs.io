@@ -1,0 +1,39 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.6.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'spring-boot'
+
+group = 'com.greglturnquist'
+version = '0.0.1-SNAPSHOT'
+
+description = """orbs.io"""
+
+sourceCompatibility = 1.5
+targetCompatibility = 1.5
+
+repositories {
+     maven { url "http://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version:'1.3.5.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version:'1.3.5.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest', version:'1.3.5.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version:'1.3.5.RELEASE'
+    runtime group: 'com.h2database', name: 'h2', version:'1.4.191'
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version:'1.3.5.RELEASE') {
+exclude(module: 'commons-logging')
+    }
+    compile(group: 'org.projectlombok', name: 'lombok', version:'1.16.4') {
+       /* This dependency was originally in the Maven provided scope, but the project was not of type war.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       Please review and delete this closure when resolved. */
+    }
+}
