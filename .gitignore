@@ -20,3 +20,8 @@ hs_err_pid*
 build             
 settings.gradle   
 gradle*           
+.build.gradle.swp
+# For whatever reason gradle adds a lot of files in node_modules
+# Todo: Learn more about node_modules
+src/main/resources/static/node_modules
+src/main/resources/static/node
