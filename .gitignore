@@ -12,12 +12,12 @@
 hs_err_pid*
 
 # Idea's sht
-.idea
+.idea/
 *.iml
 
 # Gradle's sht
-.gradle
-build             
+.gradle/
+build/
 settings.gradle   
 gradle*           
 .build.gradle.swp
