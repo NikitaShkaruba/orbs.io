@@ -9,12 +9,10 @@ const follow = require('./follow'); // function to hop multiple links by rel
 const root = '/api';
 // end::vars[]
 
-
-
 // tag::app[]
 class App extends React.Component {
 
-	constructor(pros) {
+	constructor(props) {
 		super(props);
 		this.state = {employees: [], attributes: [], pageSize: 2, links: {}};
 		this.updatePageSize = this.updatePageSize.bind(this);
