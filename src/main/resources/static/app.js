@@ -1,27 +1,28 @@
 'use strict';
 
-// tag::vars[]
 const React = require('react');
 const client = require('./client');
-
-const follow = require('./follow'); // function to hop multiple links by rel
-
+const follow = require('./follow'); // function to hop multiple links by "rel"
 const root = '/api';
-// end::vars[]
-
-// tag::app[]
+// Prime component which is the app itself. Handles all rest actions, inclues all other inside his render()
 class App extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {employees: [], attributes: [], pageSize: 2, links: {}};
+
+        // What is up with all those bindings
 		this.updatePageSize = this.updatePageSize.bind(this);
 		this.onCreate = this.onCreate.bind(this);
 		this.onDelete = this.onDelete.bind(this);
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 
-	// tag::follow-2[]
+    componentDidMount() {
+        this.loadFromServer(this.state.pageSize);
+    }
+
+    // load employees from server
 	loadFromServer(pageSize) {
 		follow(client, root, [
 			{rel: 'employees', params: {size: pageSize}}]
@@ -42,9 +43,8 @@ class App extends React.Component {
 				links: employeeCollection.entity._links});
 		});
 	}
-	// end::follow-2[]
 
-	// tag::create[]
+    // rest create action handler
 	onCreate(newEmployee) {
 		follow(client, root, ['employees']).then(employeeCollection => {
 			return client({
@@ -60,18 +60,17 @@ class App extends React.Component {
 			this.onNavigate(response.entity._links.last.href);
 		});
 	}
-	// end::create[]
 
-	// tag::delete[]
+    // rest delete action handler
 	onDelete(employee) {
 		client({method: 'DELETE', path: employee._links.self.href}).done(response => {
 			this.loadFromServer(this.state.pageSize);
 		});
 	}
-	// end::delete[]
 
-	// tag::navigate[]
+    // navigation handler
 	onNavigate(navUri) {
+        // retrieve data and nav_links from navUri which is '/api/employees?page=2' as example
 		client({method: 'GET', path: navUri}).done(employeeCollection => {
 			this.setState({
 				employees: employeeCollection.entity._embedded.employees,
@@ -81,55 +80,50 @@ class App extends React.Component {
 			});
 		});
 	}
-	// end::navigate[]
 
-	//tag::update-page-size[]
-	updatePageSize(pageSize){
+	updatePageSize(pageSize) {
 		if (pageSize !== this.state.pageSize) {
 			this.loadFromServer(pageSize);
 		}
 	}
-	// end::update-page-size[]
-
-	// tag::follow-1[]
-	componentDidMount() {
-		this.loadFromServer(this.state.pageSize);
-	}
-	// end::follow-1[]
 
 	render() {
 		return (
 			<div>
-				<CreateDialog attributes={this.state.attributes}  onCreate={this.onCreate}/>
+                <h2>orbs.io</h2>
+				<CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
 				<EmployeeList employees={this.state.employees}
 							  links={this.state.links}
 							  pageSize={this.state.pageSize}
-							  onNavigate={this.state.onNavigate}
-							  updatePageSize={this.state.updatePageSize}/>
+							  onNavigate={this.onNavigate}
+							  onDelete={this.onDelete}
+							  updatePageSize={this.updatePageSize}/>
 			</div>
 		)
 	}
 }
 
-// tag::create-dialog[]
-class CreateDalog extends React.Component {
+// Class for handling creation of new employee
+class CreateDialog extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this); // why do we have to bind this? :\
 	}
 
 	handleSubmit(e) {
 		e.preventDefault();
 		var newEmployee = {};
-		this.props.attributes.forEach(attributes => {
+
+        // get attributes from create form
+		this.props.attributes.forEach(attribute => {
 			newEmployee[attribute] = React.findDOMNode(this.refs[attribute]).value.trim();
 		});
 		this.props.onCreate(newEmployee);
 
 		// clear out the dialog's inputs
 		this.props.attributes.forEach(attribute => {
-			React.findDOMNode(this.refs[attribute]).value= '';
+			React.findDOMNode(this.refs[attribute]).value = '';
 		});
 
 		// Navigate away from the dialog to hide it.
@@ -137,7 +131,8 @@ class CreateDalog extends React.Component {
 	}
 
 	render() {
-		var inputs = this.props.attributes.map( attribute =>
+        // Gather all entity fields
+		var inputs = this.props.attributes.map(attribute =>
 			<p key={attribute}>
 				<input type="text" placeholder={attribute} ref={attribute} className="field" />
 			</p>
@@ -145,13 +140,12 @@ class CreateDalog extends React.Component {
 
 		return (
 			<div>
-				<a href="#createEmployee">Create</a>
+				<a href="#createEmployee">Create new employee</a>
 
 				<div id="createEmployee" className="modalDialog">
 					<div>
 						<a href="#" title="Close" className="close">X</a>
-
-						<h2>Create new employee</h2>
+						<h2>New employee</h2>
 
 						<form>
 							{inputs}
@@ -163,11 +157,9 @@ class CreateDalog extends React.Component {
 		)
 	}
 }
-// end::create-dialog[]
 
-
-// tag::employee-list[]
-class EmployeeList extends React.Component{
+// Class for listing employees with pagination
+class EmployeeList extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -178,42 +170,47 @@ class EmployeeList extends React.Component{
 		this.handleInput = this.handleInput.bind(this);
 	}
 
-	// tag::handle-page-size-updates[]
+    // handle
 	handleInput(e) {
 		e.preventDefault();
+        // gather value from input
 		var pageSize = React.findDOMNode(this.refs.pageSize).value;
+
 		if (/^[0-9]+$/.test(pageSize)) {
+            // if number update employee table
 			this.props.updatePageSize(pageSize);
 		} else {
+            // if not - remove last symbol
 			React.findDOMNode(this.refs.pageSize).value =
 				pageSize.substring(0, pageSize.length - 1);
 		}
 	}
-	// end::handle-page-size-updates[]
 
-	// tag::handle-nav[]
+    // handle pagination links
 	handleNavFirst(e){
+		e.preventDefault();
+		this.props.onNavigate(this.props.links.first.href);
+	}
+	handleNavPrev(e) {
 		e.preventDefault();
 		this.props.onNavigate(this.props.links.prev.href);
 	}
-
 	handleNavNext(e) {
 		e.preventDefault();
 		this.props.onNavigate(this.props.links.next.href);
 	}
-
 	handleNavLast(e) {
 		e.preventDefault();
 		this.props.onNavigate(this.props.links.last.href);
 	}
-	// end::handle-nav[]
 
-	// tag::employee-list-render[]
 	render() {
+        // gather employees
 		var employees = this.props.employees.map(employee =>
 			<Employee key={employee._links.self.href} employee={employee} onDelete={this.props.onDelete}/>
 		);
 
+        // prepare links to follow
 		var navLinks = [];
 		if ("first" in this.props.links) {
 			navLinks.push(<button key="first" onClick={this.handleNavFirst}>&lt;&lt;</button>);
@@ -230,13 +227,17 @@ class EmployeeList extends React.Component{
 
 		return (
 			<div>
-				<input ref="pageSize" defaultValue={this.props.pageSize} onInput={this.handleInput}/>
+                <div>
+                    entities per page:
+                    <input ref="pageSize" defaultValue={this.props.pageSize} onInput={this.handleInput}/>
+                </div>
+
 				<table>
 					<tr>
 						<th>First Name</th>
 						<th>Last Name</th>
 						<th>Description</th>
-						<th></th>
+						<th/>
 					</tr>
 					{employees}
 				</table>
@@ -246,12 +247,10 @@ class EmployeeList extends React.Component{
 			</div>
 		)
 	}
-	// end::employee-list-render[]
 }
-// end::employee-list[]
 
-// tag::employee[]
-class Employee extends React.Component{
+// Class for rendering single employeee in EmployeeList's table
+class Employee extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -275,12 +274,6 @@ class Employee extends React.Component{
 		)
 	}
 }
-// end::employee[]
 
-// tag::render[]
-React.render(
-	<App />,
-	document.getElementById('react')
-)
-// end::render[]
-
+// Render <App /> instead of <div id="react"/>
+React.render(<App />, document.getElementById('react'));
