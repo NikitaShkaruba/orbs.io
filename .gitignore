@@ -12,16 +12,17 @@
 hs_err_pid*
 
 # Idea's sht
-.idea
+.idea/
 *.iml
 
 # Gradle's sht
-.gradle
-build             
+.gradle/
+build/
 settings.gradle   
 gradle*           
 .build.gradle.swp
-# For whatever reason gradle adds a lot of files in node_modules
-# Todo: Learn more about node_modules
-src/main/resources/static/node_modules
-src/main/resources/static/node
+
+# node.js and webpack output direcories
+src/main/resources/static/built/
+**/node_modules/
+src/main/resources/static/node/
