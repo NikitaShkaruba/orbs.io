@@ -3,7 +3,9 @@
 const React = require('react');
 const client = require('./client');
 const follow = require('./follow'); // function to hop multiple links by "rel"
+const when = require('when');
 const root = '/api';
+
 // Prime component which is the app itself. Handles all rest actions, inclues all other inside his render()
 class App extends React.Component {
 
@@ -11,9 +13,10 @@ class App extends React.Component {
         super(props);
         this.state = {employees: [], attributes: [], pageSize: 2, links: {}};
 
-        // What is up with all those bindings
+        // Bind tag action handlers with functions
         this.updatePageSize = this.updatePageSize.bind(this);
         this.onCreate = this.onCreate.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.onNavigate = this.onNavigate.bind(this);
     }
@@ -33,14 +36,25 @@ class App extends React.Component {
                 headers: {'Accept': 'application/schema+json'}
             }).then(schema => {
                 this.schema = schema.entity;
+                this.links = employeeCollection.entity._links;
                 return employeeCollection;
             });
-        }).done(employeeCollection => {
+        }).then(employeeCollection => {
+            return employeeCollection.entity._embedded.employees.map(employee =>
+                client({
+                    method: 'GET',
+                    path: employee._links.self.href
+                })
+            );
+        }).then(employeePromises => {
+            return when.all(employeePromises);
+        }).done(employees => {
             this.setState({
-                employees: employeeCollection.entity._embedded.employees,
+                employees: employees,
                 attributes: Object.keys(this.schema.properties),
                 pageSize: pageSize,
-                links: employeeCollection.entity._links});
+                links: this.links
+            });
         });
     }
 
@@ -61,6 +75,26 @@ class App extends React.Component {
         });
     }
 
+    // rest update action handler
+    onUpdate(employee, updatedEmployee) {
+        client({
+            method: 'PUT',
+            path: employee.entity._links.self.href,
+            entity: updatedEmployee,
+            headers: {
+                'Content-Type': 'application/json',
+                'If-Match': employee.headers.Etag
+            }
+        }).done(response => {
+            this.loadFromServer(this.state.pageSize);
+        }, response => {
+            if (response.status.code === 412) {
+                alert('DENIED: Unable to update ' +
+                    employee.entity._links.self.href + '. Your copy is stale.');
+            }
+        });
+    }
+
     // rest delete action handler
     onDelete(employee) {
         client({method: 'DELETE', path: employee._links.self.href}).done(response => {
@@ -70,16 +104,30 @@ class App extends React.Component {
 
     // navigation handler
     onNavigate(navUri) {
-        // retrieve data and nav_links from navUri which is '/api/employees?page=2' as example
-        client({method: 'GET', path: navUri}).done(employeeCollection => {
+        client({
+            method: 'GET',
+            path: navUri
+        }).then(employeeCollection => {
+            this.links = employeeCollection.entity._links;
+
+            return employeeCollection.entity._embedded.employees.map(employee =>
+                client({
+                    method: 'GET',
+                    path: employee._links.self.href
+                })
+            );
+        }).then(employeePromises => {
+            return when.all(employeePromises);
+        }).done(employees => {
             this.setState({
-                employees: employeeCollection.entity._embedded.employees,
-                attributes: this.state.attributes,
+                employees: employees,
+                attributes: Object.keys(this.schema.properties),
                 pageSize: this.state.pageSize,
-                links: employeeCollection.entity._links
+                links: this.links
             });
         });
     }
+
 
     updatePageSize(pageSize) {
         if (pageSize !== this.state.pageSize) {
@@ -95,7 +143,9 @@ class App extends React.Component {
                 <EmployeeList employees={this.state.employees}
                               links={this.state.links}
                               pageSize={this.state.pageSize}
+                              attributes={this.state.attributes}
                               onNavigate={this.onNavigate}
+                              onUpdate={this.onUpdate}
                               onDelete={this.onDelete}
                               updatePageSize={this.updatePageSize}/>
             </div>
@@ -158,6 +208,60 @@ class CreateDialog extends React.Component {
     }
 }
 
+// Class for handling employee updates
+class UpdateDialog extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        var updatedEmployee = {};
+
+        // fill updatedEmployee with form fields, update
+        this.props.attributes.forEach(attribute => {
+            updatedEmployee[attribute] = React.findDOMNode(this.refs[attribute]).value.trim();
+        });
+        this.props.onUpdate(this.props.employee, updatedEmployee);
+
+        // hide dialog
+        window.location = "#";
+    }
+
+    render() {
+        var inputs = this.props.attributes.map(attribute =>
+            <p key={this.props.employee.entity[attribute]}>
+                <input type="text" placeholder={attribute}
+                       defaultValue={this.props.employee.entity[attribute]}
+                       ref={attribute} className="field" />
+            </p>
+        );
+
+        var dialogId = "updateEmployee-" + this.props.employee.entity._links.self.href;
+
+        return (
+            <div key={this.props.employee.entity._links.self.href}>
+                <a href={"#" + dialogId}>Update</a>
+                <div id={dialogId} className="modalDialog">
+                    <div>
+                        <a href="#" title="Close" className="close">X</a>
+
+                        <h2>Update an employee</h2>
+
+                        <form>
+                            {inputs}
+                            <button onClick={this.handleSubmit}>Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+}
+
 // Class for listing employees with pagination
 class EmployeeList extends React.Component {
 
@@ -207,7 +311,11 @@ class EmployeeList extends React.Component {
     render() {
         // gather employees
         var employees = this.props.employees.map(employee =>
-            <Employee key={employee._links.self.href} employee={employee} onDelete={this.props.onDelete}/>
+                            <Employee key={employee._links.self.href}
+                                      employee={employee}
+                                      attributes={this.props.attributes}
+                                      onUpdate={this.props.onUpdate}
+                                      onDelete={this.props.onDelete}/>
         );
 
         // prepare links to follow
@@ -238,6 +346,7 @@ class EmployeeList extends React.Component {
                         <th>Last Name</th>
                         <th>Description</th>
                         <th/>
+                        <th/>
                     </tr>
                     {employees}
                 </table>
@@ -267,6 +376,11 @@ class Employee extends React.Component {
                 <td>{this.props.employee.firstName}</td>
                 <td>{this.props.employee.lastName}</td>
                 <td>{this.props.employee.description}</td>
+                <td>
+                    <UpdateDialog employee={this.props.employee}
+                                  attributes={this.props.attributes}
+                                  onUpdate={this.props.onUpdate}/>
+                </td>
                 <td>
                     <button onClick={this.handleDelete}>Delete</button>
                 </td>
