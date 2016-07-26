@@ -97,7 +97,7 @@ class App extends React.Component {
 
     // rest delete action handler
     onDelete(employee) {
-        client({method: 'DELETE', path: employee._links.self.href}).done(response => {
+        client({method: 'DELETE', path: employee.entity._links.self.href}).done(response => {
             this.loadFromServer(this.state.pageSize);
         });
     }
@@ -311,7 +311,7 @@ class EmployeeList extends React.Component {
     render() {
         // gather employees
         var employees = this.props.employees.map(employee =>
-                            <Employee key={employee._links.self.href}
+                            <Employee key={employee.entity._links.self.href}
                                       employee={employee}
                                       attributes={this.props.attributes}
                                       onUpdate={this.props.onUpdate}
@@ -373,9 +373,9 @@ class Employee extends React.Component {
     render() {
         return (
             <tr>
-                <td>{this.props.employee.firstName}</td>
-                <td>{this.props.employee.lastName}</td>
-                <td>{this.props.employee.description}</td>
+                <td>{this.props.employee.entity.firstName}</td>
+                <td>{this.props.employee.entity.lastName}</td>
+                <td>{this.props.employee.entity.description}</td>
                 <td>
                     <UpdateDialog employee={this.props.employee}
                                   attributes={this.props.attributes}

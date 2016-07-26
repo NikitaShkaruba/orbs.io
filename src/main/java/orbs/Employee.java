@@ -14,6 +14,7 @@ public class Employee {
     private String firstName;
     private String lastName;
     private String description;
+
     private @Version @JsonIgnore Long version;
 
     private Employee() {}
