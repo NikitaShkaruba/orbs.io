@@ -26,3 +26,7 @@ gradle*
 src/main/resources/static/built/
 **/node_modules/
 src/main/resources/static/node/
+npm-debug.log
+
+# Typical swap files
+*.swp

@@ -1,8 +1,8 @@
-// build dependencies
+// gradle build dependencies
 buildscript {
     ext {
-        springBootVersion = '1.3.6.RELEASE'
-    }
+        springBootVersion = '1.3.6.RELEASE' 
+    } 
     repositories {
         mavenCentral()
         maven {
@@ -15,18 +15,9 @@ buildscript {
     }
 }
 
-// Add gradle tasks from those plugins
+// Add gradle tasks and dependencies from those plugins
 apply plugin: 'java'
 apply plugin: 'spring-boot'
-apply plugin: 'com.moowork.node'
-
-// jar configuration
-jar {
-    baseName = 'orbs.io'
-    version = '0.0.1-SNAPSHOT'
-}
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 // app dependencies
 repositories {
@@ -40,3 +31,37 @@ dependencies {
     runtime('com.h2database:h2')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
+
+// jar configuration
+jar {
+    baseName = 'orbs.io'
+    version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// Custom tasks
+// Those tasks are configuration phase tasks, which means that they are executed before EVERY other tasks.r
+// Todo: change phase of those tasks from configuration to execution
+task installFrontendDependencies(type: Exec) { 
+    workingDir './src/main/resources/static'
+
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        // Todo: add windows 'npm install' invokation
+        throw new GradleException("installFrontendDependencies isn't implemented for windows")
+    } else {
+        commandLine 'npm', 'install'
+    }
+}
+task buildAssets(dependsOn: 'installFrontendDependencies', type: Exec) { 
+    workingDir './src/main/resources/static'
+
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        // Todo: add windows 'webpack' invokation
+        throw new GradleException("BuildAssets isn't implemented for windows")
+    } else {
+        commandLine './node_modules/.bin/webpack'
+    }
+}
+
+bootRun.dependsOn buildAssets
