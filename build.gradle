@@ -45,12 +45,23 @@ targetCompatibility = 1.8
 // Todo: change phase of those tasks from configuration to execution
 task installFrontendDependencies(type: Exec) { 
     workingDir './src/main/resources/static'
-    commandLine 'npm', 'install'
+
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        // Todo: add windows 'npm install' invokation
+        throw new GradleException("installFrontendDependencies isn't implemented for windows")
+    } else {
+        commandLine 'npm', 'install'
+    }
 }
 task buildAssets(dependsOn: 'installFrontendDependencies', type: Exec) { 
-    buildAssets.dependsOn 
     workingDir './src/main/resources/static'
-    commandLine './node_modules/.bin/webpack'
+
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        // Todo: add windows 'webpack' invokation
+        throw new GradleException("BuildAssets isn't implemented for windows")
+    } else {
+        commandLine './node_modules/.bin/webpack'
+    }
 }
 
 bootRun.dependsOn buildAssets
