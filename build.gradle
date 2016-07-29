@@ -47,8 +47,9 @@ task installFrontendDependencies(type: Exec) {
     workingDir './src/main/resources/static'
 
     if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-        // Todo: add windows 'npm install' invokation
-        throw new GradleException("installFrontendDependencies isn't implemented for windows")
+		// cmd cause errors, that's why powershell
+        commandLine 'powershell', '/c', 'npm', 'install', '--no-optional' 
+        commandLine 'powershell', '/c', 'npm', 'update', 'minimatch'
     } else {
         commandLine 'npm', 'install'
     }
@@ -57,11 +58,11 @@ task buildAssets(dependsOn: 'installFrontendDependencies', type: Exec) {
     workingDir './src/main/resources/static'
 
     if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-        // Todo: add windows 'webpack' invokation
-        throw new GradleException("BuildAssets isn't implemented for windows")
+        commandLine 'powershell', '/c', 'node_modules/.bin/webpack.cmd'
     } else {
         commandLine './node_modules/.bin/webpack'
     }
 }
 
 bootRun.dependsOn buildAssets
+
