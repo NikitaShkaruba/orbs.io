@@ -42,7 +42,7 @@ public class World {
         Random rand = new Random();
         bots = new ArrayList<Mage>();
 
-        int botsAmount = rand.nextInt(8) + 2;
+        int botsAmount =  3; //rand.nextInt(8) + 2;
         for(int i = 0; i < botsAmount; i++)
             bots.add(new Mage(rand.nextDouble() % 100, rand.nextDouble() % 100)); // % 100 limits random number from 0 - 99
 
