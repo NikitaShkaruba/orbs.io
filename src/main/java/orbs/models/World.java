@@ -1,5 +1,6 @@
 package orbs.models;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Random;
@@ -25,10 +26,11 @@ public class World {
         return bots;
     }
 
+    @Scheduled(fixedRate = 500)
     public void timeTick() {
         // Todo: add timetick logic
-//        updateBots();
-        System.out.println("World tick");
+        System.out.println("+++ World tick");
+        updateBots();
     }
     public void updatePlayer() {
 

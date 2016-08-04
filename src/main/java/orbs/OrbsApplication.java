@@ -6,10 +6,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-// This class can bootstrap spring environment without manual deployment.
-// Just run in terminal: java -jar target/orbs.jar
 @SpringBootApplication 					// Alternative to @Configuration, @EnableAutoConfiguration and @ComponentScan
+@EnableScheduling                       // We need this for world fixed timeticks
 public class OrbsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(OrbsApplication.class, args);

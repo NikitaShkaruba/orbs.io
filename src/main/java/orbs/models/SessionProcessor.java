@@ -13,13 +13,15 @@ public class SessionProcessor {
         // Todo: add logic
     }
 
-    public void printAllBots() {
-        // Todo: Add printAllBots logic
+    public String getAllBotsAsJson() {
+        // Todo: Add getAllBotsAsJson logic
         ArrayList<Mage> bots = world.getBots();
 
-        System.out.println("** SessionProcessor's printAllBots() start **");
+        String json = "bots { \n";
         for(Mage bot: bots)
-            System.out.println(bot.toJson());
-        System.out.println("** SessionProcessor's printAllBots() end **");
+            json += bot.toJson() + "\n";
+        json += "}\n";
+
+        return json;
     }
 }
