@@ -2,7 +2,6 @@ package orbs.models;
 
 import orbs.models.enums.Orb;
 import orbs.models.enums.SpellType;
-
 import java.awt.geom.Point2D;
 
 // Spell casted by mage(maybe no only by him?), stores coordinates, spell-type and caster(his mage)
@@ -10,6 +9,7 @@ public class Spell {
     private Orb[] components;
     private SpellType type;
     private Point2D.Double coordinates;
+    private double directionAngle;
 
     public Spell(Orb[] components) {
         this.components = components;

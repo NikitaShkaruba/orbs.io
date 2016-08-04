@@ -9,8 +9,9 @@ public class Mage {
     private Orb[] orbs;
     private String name;
 
-    public Mage(double startX, double startY) {
-        this.coordinates.setLocation(startX, startY);
+    public Mage(String name, Point2D.Double coordinates) {
+        this.name = name;
+        this.coordinates = coordinates;
         this.orbs = new Orb[3];
     }
 

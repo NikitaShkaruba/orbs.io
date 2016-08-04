@@ -15,9 +15,7 @@ public class SessionController {
     // Returns page with login form
 	@RequestMapping(value = "/")
 	public String index() {
-//	    sessionProcessor.handleInput();
-		// render index.html
-        System.out.println("--------------- Hello from SessionController ---------------");
+        sessionProcessor.createSession();
 		return "login_form";
 	}
 
@@ -33,7 +31,6 @@ public class SessionController {
     @RequestMapping(value = "/death")
     public String death() {
         // Todo: add actual post logic
-        // render index.html
         return "death_partial";
     }
 }

@@ -27,7 +27,7 @@ public class World {
 
     public void timeTick() {
         // Todo: add timetick logic
-        updateBots();
+//        updateBots();
         System.out.println("World tick");
     }
     public void updatePlayer() {
@@ -40,12 +40,14 @@ public class World {
         }
     }
     private ArrayList<Mage> generateBots() {
-        Random rand = new Random();
         bots = new ArrayList<Mage>();
 
-        int botsAmount =  3; //rand.nextInt(8) + 2;
-        for(int i = 0; i < botsAmount; i++)
-            bots.add(new Mage(rand.nextDouble() % 100, rand.nextDouble() % 100)); // % 100 limits random number from 0 - 99
+        int botsAmount =  3;
+        for(int i = 0; i < botsAmount; i++) {
+            String bot_name = "bot" + i;
+            Point2D.Double bot_coordinates = new Point2D.Double(random.nextDouble() % 100, random.nextDouble() % 100);
+            bots.add(new Mage(bot_name, bot_coordinates));
+        }
 
         return bots;
     }
