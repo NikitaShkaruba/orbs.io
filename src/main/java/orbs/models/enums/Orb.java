@@ -1,7 +1,7 @@
-package orbs.models.beans;
+package orbs.models.enums;
 
 // Orb from whose the spell is composed
-enum Orb {
+public enum Orb {
     EARTH,
     WIND,
     WATER,

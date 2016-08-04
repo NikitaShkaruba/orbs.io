@@ -1,4 +1,7 @@
-package orbs.models.beans;
+package orbs.models;
+
+import orbs.models.enums.Orb;
+import orbs.models.enums.SpellType;
 
 import java.awt.geom.Point2D;
 
@@ -15,6 +18,9 @@ public class Spell {
 
     public Point2D.Double getCoordinates() {
         return coordinates;
+    }
+    public void setCoordinates(Point2D.Double point) {
+        this.coordinates.setLocation(point);
     }
     public SpellType getType() {
         return type;

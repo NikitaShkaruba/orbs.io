@@ -1,7 +1,7 @@
-package orbs.models.beans;
+package orbs.models.enums;
 
 // Todo: add more spells
-enum SpellType {
+public enum SpellType {
     Firebal, // fire, fire, fire
     Shield   // earth, earth, earth
 }

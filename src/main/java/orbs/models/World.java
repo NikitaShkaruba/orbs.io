@@ -1,4 +1,4 @@
-package orbs.models.beans;
+package orbs.models;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ public class World {
     public void timeTick() {
         // Todo: add timetick logic
         updateBots();
+        System.out.println("World tick");
     }
     public void updatePlayer() {
 
