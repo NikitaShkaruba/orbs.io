@@ -30,3 +30,6 @@ npm-debug.log
 
 # Typical swap files
 *.swp
+
+# Remove project specific .vimrc if u use it :)
+.vimrc
