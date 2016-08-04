@@ -21,6 +21,17 @@ public class Mage {
     public Spell cast() {
         return new Spell(orbs);
     }
+    public String toJson() {
+        // Todo: refactor this shit omg, i can't read
+        char quotes = '"';
+        char tab = '\t';
+        char newLine = '\n';
+
+        return quotes + name + quotes + " {" + newLine +
+                tab + quotes + "x" + quotes +": " + coordinates.getX() + newLine +
+                tab + quotes + "y" + quotes +": " + coordinates.getX() + newLine +
+                "}";
+    }
 
     public Point2D.Double getCoordinates() {
         return this.coordinates;

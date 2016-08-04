@@ -15,7 +15,7 @@ public class SessionController {
     // Returns page with login form
 	@RequestMapping(value = "/")
 	public String index() {
-        sessionProcessor.createSession();
+        sessionProcessor.printAllBots();
 		return "login_form";
 	}
 

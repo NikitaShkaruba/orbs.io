@@ -44,9 +44,9 @@ public class World {
 
         int botsAmount =  3;
         for(int i = 0; i < botsAmount; i++) {
-            String bot_name = "bot" + i;
-            Point2D.Double bot_coordinates = new Point2D.Double(random.nextDouble() % 100, random.nextDouble() % 100);
-            bots.add(new Mage(bot_name, bot_coordinates));
+            String name = "bot" + i;
+            Point2D.Double coordinates = new Point2D.Double(random.nextDouble() % 100, random.nextDouble() % 100);
+            bots.add(new Mage(name, coordinates));
         }
 
         return bots;
