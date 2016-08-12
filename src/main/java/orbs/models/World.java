@@ -1,6 +1,7 @@
 package orbs.models;
 
 import org.springframework.scheduling.annotation.Scheduled;
+import orbs.models.enums.OrbEnum;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Random;
@@ -32,15 +33,27 @@ public class World {
         System.out.println("+++ World tick");
         updateBots();
     }
+
     public void updatePlayer() {
 
     }
+
     public void updateBots() {
         for(Mage bot: this.bots) {
             Point2D.Double coordsBefore = bot.getCoordinates();
+            _randomOrbs(bot);
+            if(random.nextBoolean()){
+                bot.cast();
+            }
             bot.move(coordsBefore.x + random.nextFloat() % 6, coordsBefore.y + random.nextFloat() % 6);
         }
     }
+
+    public void _randomOrbs(Mage mage){
+        OrbEnum[] orbsValues = OrbEnum.values();
+        mage.orbs.appendOrb(orbsValues[random.nextInt(orbsValues.length)]);
+    }
+
     private ArrayList<Mage> generateBots() {
         bots = new ArrayList<Mage>();
 
@@ -50,7 +63,6 @@ public class World {
             Point2D.Double coordinates = new Point2D.Double(random.nextDouble() % 100, random.nextDouble() % 100);
             bots.add(new Mage(name, coordinates));
         }
-
         return bots;
     }
 }
