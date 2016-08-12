@@ -36,7 +36,7 @@ public class World {
 
     }
     public void updateBots() {
-        for(Mage bot: bots) {
+        for(Mage bot: this.bots) {
             Point2D.Double coordsBefore = bot.getCoordinates();
             bot.move(coordsBefore.x + random.nextFloat() % 6, coordsBefore.y + random.nextFloat() % 6);
         }

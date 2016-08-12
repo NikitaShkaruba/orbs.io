@@ -1,6 +1,7 @@
 package orbs.models;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.gson.Gson;
 import java.util.ArrayList;
 
 // Client sends to socket his: coordinates relative to his screen, key presses, mouse clicks.
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 public class SessionProcessor {
     @Autowired
     private World world;
+    private Gson gson = new Gson();
 
     public void startSession() {
         // Todo: add logic
@@ -17,10 +19,8 @@ public class SessionProcessor {
         // Todo: Add getAllBotsAsJson logic
         ArrayList<Mage> bots = world.getBots();
 
-        String json = "bots { \n";
-        for(Mage bot: bots)
-            json += bot.toJson() + "\n";
-        json += "}\n";
+        String json  = gson.toJson(bots);
+        System.out.println(json);
 
         return json;
     }

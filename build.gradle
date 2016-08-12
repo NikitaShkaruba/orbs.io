@@ -29,12 +29,13 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-data-rest')
     compile('org.projectlombok:lombok:1.16.6')
+    compile('com.google.code.gson:gson:2.7')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     // We use the latest groovy 2.x version for Spock testing
     compile 'org.codehaus.groovy:groovy-all:2.4.5'
     runtime('com.h2database:h2')
     testCompile('org.springframework.boot:spring-boot-starter-test')
-	// Use the awesome Spock testing and specification framework even with Java
+    // Use the awesome Spock testing and specification framework even with Java
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'junit:junit:4.12'
 }
@@ -54,7 +55,7 @@ task installFrontendDependencies(type: Exec) {
     workingDir './src/main/resources/static'
 
     if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-		// cmd cause errors, that's why powershell
+        // cmd cause errors, that's why powershell
         commandLine 'powershell', '/c', 'npm', 'install', '--no-optional' 
         commandLine 'powershell', '/c', 'npm', 'update', 'minimatch'
     } else {
@@ -74,7 +75,7 @@ task buildAssets(dependsOn: 'installFrontendDependencies', type: Exec) {
 bootRun.dependsOn buildAssets
 
 test {
-	//we want display the following test events
+    //we want display the following test events
     testLogging {
         events "PASSED", "STARTED", "FAILED", "SKIPPED"
     }
