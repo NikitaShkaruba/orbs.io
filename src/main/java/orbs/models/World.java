@@ -29,11 +29,11 @@ public class World {
     @Scheduled(fixedRate = 500)
     public void timeTick() {
         // Todo: add timetick logic
-        System.out.println("+++ World tick");
+        System.out.println("+++ World's time tick");
         updateBots();
     }
     public void updatePlayer() {
-
+        // Todo: add logic
     }
     public void updateBots() {
         for(Mage bot: bots) {

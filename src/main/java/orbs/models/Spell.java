@@ -1,33 +1,32 @@
 package orbs.models;
 
-import orbs.models.enums.Orb;
+import orbs.models.enums.OrbType;
 import orbs.models.enums.SpellType;
+
 import java.awt.geom.Point2D;
 
 // Spell casted by mage(maybe no only by him?), stores coordinates, spell-type and caster(his mage)
 public class Spell {
-    private Orb[] components;
-    private SpellType type;
+    private OrbType[] components;
     private Point2D.Double coordinates;
     private double directionAngle;
 
-    public Spell(Orb[] components) {
+    public Spell(OrbType[] components) {
         this.components = components;
-        type = detectSpellType(components);
     }
 
     public Point2D.Double getCoordinates() {
         return coordinates;
     }
     public void setCoordinates(Point2D.Double point) {
-        this.coordinates.setLocation(point);
+        coordinates.setLocation(point);
     }
     public SpellType getType() {
-        return type;
+        return composeSpell(components);
     }
 
-    private SpellType detectSpellType(Orb[] components) {
-        // Todo: remove detectSpellType plug
+    private SpellType composeSpell(OrbType[] components) {
+        // Todo: remove composeSpell plug
         return SpellType.Firebal;
     }
 }

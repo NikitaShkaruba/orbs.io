@@ -15,12 +15,13 @@ public class OrbsApplication {
 		SpringApplication.run(OrbsApplication.class, args);
 	}
 
-	// Below are defined all the beans managed by the container.
+	// Below are defined all the beans which are managed by the container.
 	@Bean
 	@Scope("singleton")
 	public World world() {
 		return new World();
 	}
+
 	@Bean
 	@Scope("prototype") // Todo: change scope from "prototype" to "session"
 	public SessionProcessor sessionProcessor() {
