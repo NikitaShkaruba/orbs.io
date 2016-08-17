@@ -5,21 +5,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
 import spock.lang.Unroll
-import com.google.gson.Gson
 import org.springframework.http.MediaType
 
-class SessionProcessorSpec extends Specification {
+class SessionControllerSpec extends Specification {
 
     def sessionController = new SessionController()
     MockMvc mockMvc = standaloneSetup(sessionController).build()
-    Gson gson = new Gson()
 
-    @Unroll("port to /login with '#login', wait for #httpcode")
+    @Unroll("POST to /login with '#login', expect for '#message' with # #httpcode")
     def "/login route login and check data"() {
         when:
-        print HttpStatus
         def request = post('/login')
-        if (httpcode.value() == 200) {
+        if (login != null) {
             request = request.param("login", login)
         }
         def returnObj = mockMvc.perform(request)
@@ -33,11 +30,10 @@ class SessionProcessorSpec extends Specification {
         where:
         login        | httpcode               | message
         null         | HttpStatus.BAD_REQUEST | 'Login not found'
-        'progga'     | HttpStatus.OK          | 'Post to /login : progga'
+        ''           | HttpStatus.BAD_REQUEST | 'Login not found'
         'progga'     | HttpStatus.OK          | 'Post to /login : progga'
         'username'   | HttpStatus.OK          | 'Post to /login : username'
         'testuser'   | HttpStatus.OK          | 'Post to /login : testuser'
-        ''           | HttpStatus.BAD_REQUEST | 'Login not found'
     }
 
 }
