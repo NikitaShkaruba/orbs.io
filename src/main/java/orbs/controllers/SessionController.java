@@ -7,6 +7,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 @Controller
 public class SessionController {
@@ -22,9 +25,12 @@ public class SessionController {
     // Stores user to Database, adds mage to World bean, adds an instance of GameSessionProcessor
     // to the container, returns page with GameField
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login() {
-        // Todo: add actual post logic
-        return "game";
+    @ResponseBody
+    public ResponseEntity<String> login(@RequestParam(value="login", required=false) String login) {
+        if (login == null || login.isEmpty()) {
+            return new ResponseEntity<String>("Login not found", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<String>("Post to /login : " + login, HttpStatus.OK);
     }
 
     // GameSessionProcessor redirects user to this die page with some data(like history, kda, etc..)
