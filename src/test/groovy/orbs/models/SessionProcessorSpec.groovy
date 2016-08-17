@@ -36,7 +36,7 @@ class SessionProcessorSpec extends Specification {
         'progga'     | HttpStatus.OK          | 'Post to /login : progga'
         'progga'     | HttpStatus.OK          | 'Post to /login : progga'
         'username'   | HttpStatus.OK          | 'Post to /login : username'
-        'null'       | HttpStatus.OK          | 'Post to /login : null'
+        'testuser'   | HttpStatus.OK          | 'Post to /login : testuser'
         ''           | HttpStatus.BAD_REQUEST | 'Login not found'
     }
 
